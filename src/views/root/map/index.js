@@ -4,7 +4,6 @@ import * as Cesium from "cesium";
 import useCesium from "../../../manager/cesium";
 import basemapDef from "./basemap"
 import "cesium/Build/Cesium/Widgets/widgets.css"
-import {RootDataContext} from "../index";
 import MapClearLayer from "./layers/clear";
 import MapFacilityLayer from "./layers/facility";
 import MapGateLayer from "./layers/gate";
@@ -13,13 +12,15 @@ import MapBridgeLayer from "./layers/bridge";
 import MapTreeLayer from "./layers/tree";
 import MapWaterLayer from "./layers/water";
 import MapBoundaryLayer from "./layers/boundary";
+import MapSelectMarkerLayer from "./layers/select_marker";
 import MapTreeBillboardLayer from "./layers/tree_billboard";
 import MapFacilityBillboardLayer from "./layers/facility_billboard";
 import APIManager from "../../../manager/api"
 import {CheckBox as CheckBoxIcon, CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon} from "@mui/icons-material";
-import {ViewMode} from "../data/state";
+import {ViewItem, ViewMode} from "../data/state";
 import MasterColumnDef from "../list/model/master/column"
 import TreeColumnDef from "../list/model/tree/column"
+import {MainDataContext} from "../../../App";
 
 const styles = {
     map: {
@@ -63,7 +64,7 @@ const MapMode = {
 }
 
 const RootMapView = (props) => {
-    const { state, clearMapParams, setMasterSelectedData, setTreeSelectedData, setShowMapPoi} = useContext(RootDataContext)
+    const { state, clearMapParams, setMasterSelectedData, setTreeSelectedData, setShowMapPoi} = useContext(MainDataContext)
     const mapRef = useRef()
     const markerRef = useRef()
     const myLocationPointRef = useRef()
@@ -79,13 +80,13 @@ const RootMapView = (props) => {
     useEffect(() => {
         let val
         let contents = []
-        if (state.viewMode === ViewMode.Tree && state.treeSelectedData?.colId === "facility_code") {
+        if (state.viewItem === ViewItem.Tree && state.treeSelectedData?.colId === "facility_code") {
             val = state.treeSelectedData
             contents = treeColumnDef.map(def => {
                 if (!def.map_detail) { return null}
                 return (<tr><th>{def.headerName}</th><td>{state.treeSelectedData[def.field] ?? "--"}</td></tr>)
             }).filter(v => !!v)
-        } else if(state.viewMode === ViewMode.Master && state.masterSelectedData?.colId === "facility_code") {
+        } else if(state.viewItem === ViewMode.Master && state.masterSelectedData?.colId === "facility_code") {
             val = state.masterSelectedData
             if (!state.masterSelectedData) { return }
             contents = masterColumnDef.map(def => {
@@ -163,6 +164,11 @@ const RootMapView = (props) => {
         console.log('Update detail data', state.detail)
     }, [viewer, state.detail]);
 
+
+    const onClickFeature = useCallback((feature) => {
+        console.log("[OnClickFeature]", feature, state.viewItem)
+    }, [state.viewItem])
+
     const leftClickHandler = useCallback((e) => {
         if (!viewer) { return }
 
@@ -175,7 +181,6 @@ const RootMapView = (props) => {
             for(let propertyName of f.getPropertyIds()) {
                 p[propertyName] = f.getProperty(propertyName)
             }
-            console.log('[GetLeftClick]', p)
 
             if (p.facility_code) {
                 feature = p
@@ -187,9 +192,10 @@ const RootMapView = (props) => {
             setTreeSelectedData(null)
             return
         }
+        onClickFeature(feature)
 
         let facilityCode = feature.facility_code
-        if (state.viewMode === ViewMode.Tree && facilityCode.startsWith("GRN")) {
+        if (state.viewItem === ViewItem.Tree && facilityCode.startsWith("GRN")) {
             APIManager.getOne(`tree/info/${facilityCode}`)
                 .then(res => {
                     setTreeSelectedData({
@@ -202,7 +208,7 @@ const RootMapView = (props) => {
                 .catch(e => {
                     console.log(e.message)
                 })
-        } else if (state.viewMode === ViewMode.Master) {
+        } else if (state.viewItem === ViewItem.Master) {
             APIManager.getOne(`facility/info/${facilityCode}`)
                 .then(res => {
                     setMasterSelectedData({
@@ -216,7 +222,7 @@ const RootMapView = (props) => {
                     console.log(e.message)
                 })
         }
-    }, [viewer, state.viewMode])
+    }, [viewer, state.viewItem])
 
     useEffect(() => {
         if (!viewer || !layerInitialized){ return }
@@ -271,21 +277,29 @@ const RootMapView = (props) => {
             return
         }
 
-        const center = Cesium.Cartesian3.fromDegrees(
-            state.mapMarker.longitude,
-            state.mapMarker.latitude, 300.0);
+        // const center = Cesium.Cartesian3.fromDegrees(
+        //     state.mapMarker.longitude,
+        //     state.mapMarker.latitude, 300.0);
+        //
+        // // カメラの設定
+        // const cameraHeading = Cesium.Math.toRadians(0);
+        // const cameraPitch = Cesium.Math.toRadians(-60);
+        // viewer.camera.setView({
+        //     destination: center,
+        //     orientation: {
+        //         heading: cameraHeading,
+        //         pitch: cameraPitch,
+        //         roll: 0.0
+        //     }
+        // })
+        if (viewer && state.mapMarker?.latitude && state.mapMarker?.longitude) {
+            viewer.camera.flyTo({
+                destination : Cesium.Cartesian3.fromDegrees(state.mapMarker.longitude, state.mapMarker.latitude, 300.0),
+                duration: 0.8,
+            });
 
-        // カメラの設定
-        const cameraHeading = Cesium.Math.toRadians(0);
-        const cameraPitch = Cesium.Math.toRadians(-60);
-        viewer.camera.setView({
-            destination: center,
-            orientation: {
-                heading: cameraHeading,
-                pitch: cameraPitch,
-                roll: 0.0
-            }
-        })
+        }
+
     }, [viewer, state.mapMarker, layerInitialized]);
 
     return (
@@ -301,6 +315,7 @@ const RootMapView = (props) => {
             <MapBridgeLayer viewer={viewer} />
             <MapTreeLayer viewer={viewer} />
             <MapWaterLayer viewer={viewer} />
+            <MapSelectMarkerLayer viewer={viewer} visible={state.viewItem === ViewItem.Incident} />
             <Box style={{
                 position: "absolute",
                 top: "1rem",
@@ -314,7 +329,7 @@ const RootMapView = (props) => {
                 </ButtonGroup>
             </Box>
 
-            {(state.viewMode === ViewMode.Tree || state.viewMode === ViewMode.Master) && <Box style={{
+            {(state.viewItem === ViewItem.Tree || state.viewItem === ViewItem.Master) && <Box style={{
                 position: "absolute",
                 top: "5rem",
                 right: "1rem",

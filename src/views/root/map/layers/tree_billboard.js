@@ -1,13 +1,13 @@
 import PropTypes from "prop-types"
-import React, {useContext, useEffect, useRef, useState} from "react"
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react"
 import * as Cesium from "cesium"
-import {RootDataContext} from "../../index"
-import {ViewMode} from "../../data/state"
 import APIManager from "../../../../manager/api"
+import {MainDataContext} from "../../../../App";
+import {ViewItem} from "../../../../data/state";
 
-const MapTreeBillboardLayer = ({viewer, visible}) => {
+const MapTreeBillboardLayer = ({viewer, visible, showAll, facilityCode}) => {
 
-    const { state } = useContext(RootDataContext)
+    const { state } = useContext(MainDataContext)
     const [entities, setEntities] = useState([])
 
     useEffect(() => {
@@ -22,35 +22,68 @@ const MapTreeBillboardLayer = ({viewer, visible}) => {
     }, [viewer]);
 
     useEffect(() => {
+        updateVisible()
+    }, [entities, visible, facilityCode, showAll])
 
-        if (state.viewMode !== ViewMode.Tree) {
-            for(let entity of entities) {
-                entity.show = false
-            }
-        } else if (!state.treeSelectedData) {
-            for(let entity of entities) {
-                entity.show = state.showMapPoi
-            }
-        } else if(!state.treeSelectedData.colId || state.treeSelectedData.colId === "facility_code") {
-            for(let entity of entities) {
-                entity.show = state.treeSelectedData.facility_code === entity.id
-            }
+    // useEffect(() => {
+    //
+    //     if (state.viewItem !== ViewItem.Tree) {
+    //         for(let entity of entities) {
+    //             entity.show = false
+    //         }
+    //     } else if (!state.treeSelectedData) {
+    //         for(let entity of entities) {
+    //             entity.show = state.showMapPoi
+    //         }
+    //     } else if(!state.treeSelectedData.colId || state.treeSelectedData.colId === "facility_code") {
+    //         for(let entity of entities) {
+    //             entity.show = state.treeSelectedData.facility_code === entity.id
+    //         }
+    //     } else {
+    //         APIManager.get("list/tree_codes", {
+    //             selected: {
+    //                 colId: state.treeSelectedData?.colId,
+    //                 colValue: state.treeSelectedData?.colValue,
+    //             },
+    //             filterModel: state.treeFilterModel,
+    //         }).then(rows => {
+    //             let ids = rows.map(v => v.facility_code)
+    //             for(let entity of entities) {
+    //                 entity.show = ids.includes(entity.id)
+    //             }
+    //         })
+    //     }
+    //
+    // }, [viewer, entities, state.viewItem, state.showMapPoi, state.treeSelectedData, state.treeFilterModel])
+
+    const updateVisible = useCallback(() => {
+//        console.log("[Update Faiclity Billboard]", entities, visible)
+        let v = false
+        if ((!visible || !facilityCode) && !showAll) {
+            entities?.forEach(entity => entity.show = false)
         } else {
-            APIManager.get("list/tree_codes", {
-                selected: {
-                    colId: state.treeSelectedData?.colId,
-                    colValue: state.treeSelectedData?.colValue,
-                },
-                filterModel: state.treeFilterModel,
-            }).then(rows => {
-                let ids = rows.map(v => v.facility_code)
-                for(let entity of entities) {
-                    entity.show = ids.includes(entity.id)
-                }
+            entities?.forEach(entity => {
+//                console.log(facilityCode, entity.properties?.facility_code?.getValue())
+                entity.show = showAll || facilityCode === entity.properties?.facility_code?.getValue()
             })
         }
 
-    }, [viewer, entities, state.viewMode, state.showMapPoi, state.treeSelectedData, state.treeFilterModel])
+
+        //
+        //
+        // if (!entities) { return }
+        //
+        //
+        // if (!visible) {
+        //     for (let entity of entities) {
+        //         entity.show = false
+        //     }
+        // }
+        //
+        // for(let entity of entities) {
+        //     entity.show = true
+        // }
+    }, [entities, visible, showAll, facilityCode])
 
     return null
 }
@@ -59,6 +92,7 @@ MapTreeBillboardLayer.propTypes = {
     viewer: PropTypes.any,
     visible: PropTypes.bool,
     showAll: PropTypes.bool,
+    facilityCode: PropTypes.string,
 }
 
 export default MapTreeBillboardLayer

@@ -107,7 +107,9 @@ export default new class {
                         rowCount: res.rowCount ?? res.rows.length,
                     })
                 })
-                .catch(reject)
+                .catch(e => {
+                    console.log(e)
+                })
         })
     }
 

@@ -35,11 +35,13 @@ const MapBoundaryLayer = ({viewer, visible}) => {
                 }
             })
         return () => {
-            viewer?.entities?.values.forEach(e => {
-                if (e.name === "boundary") {
-                    viewer.entities.remove(e)
-                }
-            })
+            try {
+                viewer?.entities?.values.forEach(e => {
+                    if (e.name === "boundary") {
+                        viewer.entities.remove(e)
+                    }
+                })
+            }catch(e) {}
         }
     }, [viewer, visible])
 

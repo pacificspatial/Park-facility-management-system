@@ -1,13 +1,14 @@
 import PropTypes from "prop-types";
-import React, {useContext, useEffect, useRef, useState} from "react";
+import React, {useCallback, useContext, useEffect, useRef, useState} from "react";
 import * as Cesium from "cesium";
-import {RootDataContext} from "../../index";
-import {ViewMode} from "../../data/state";
 import APIManager from "../../../../manager/api"
+import {MainDataContext} from "../../../../App";
+import {ViewItem} from "../../../../data/state";
+import _ from "lodash";
 
-const MapFacilityBillboardLayer = ({viewer, visible}) => {
+const MapFacilityBillboardLayer = ({viewer, visible, showAll, facilityCode}) => {
 
-    const { state } = useContext(RootDataContext)
+    const { state } = useContext(MainDataContext)
     const [entities, setEntities] = useState([])
 
     useEffect(() => {
@@ -16,41 +17,49 @@ const MapFacilityBillboardLayer = ({viewer, visible}) => {
         Cesium.IonResource.fromAssetId(2428824)
             .then(async res => {
                 let ds = await Cesium.CzmlDataSource.load(res)
-                console.log('[Map]', 'billboard data source', ds)
+//                console.log('[Map]', 'billboard data source', ds)
                 let ent = await viewer.dataSources.add(ds)
                 setEntities(ent.entities.values)
             })
     }, [viewer]);
 
     useEffect(() => {
-        if (state.viewMode !== ViewMode.Master) {
-            for(let entity of entities) {
-                entity.show = false
-            }
-        } else if (!state.masterSelectedData) {
-            for(let entity of entities) {
-                entity.show = state.showMapPoi
-            }
-        } else if(!state.masterSelectedData.colId || state.masterSelectedData.colId === "facility_code") {
-            for(let entity of entities) {
-                entity.show = state.masterSelectedData.facility_code === entity.name
-            }
+        updateVisible()
+    }, [entities, visible, facilityCode, showAll])
+
+    const updateVisible = useCallback(() => {
+//        console.log("[Update Faiclity Billboard]", entities, visible)
+        let v = false
+        if ((!visible || !facilityCode) && !showAll) {
+            entities?.forEach(entity => entity.show = false)
         } else {
-            APIManager.get("list/facility_codes", {
-                selected: {
-                    colId: state.masterSelectedData?.colId,
-                    colValue: state.masterSelectedData?.colValue
-                },
-                filterModel: state.masterFilterModel,
-            }).then(rows => {
-                let ids = rows.map(v => v.facility_code)
-                for(let entity of entities) {
-                    entity.show = ids.includes(entity.name)
-                }
+            entities?.forEach(entity => {
+//                console.log(facilityCode, entity.properties?.facility_code?.getValue())
+                entity.show = showAll || facilityCode === entity.properties?.facility_code?.getValue()
             })
         }
-    }, [viewer, entities, state.viewMode, state.showMapPoi, state.masterSelectedData, state.masterFilterModel])
 
+
+        //
+        //
+        // if (!entities) { return }
+        //
+        //
+        // if (!visible) {
+        //     for (let entity of entities) {
+        //         entity.show = false
+        //     }
+        // }
+        //
+        // for(let entity of entities) {
+        //     entity.show = true
+        // }
+    }, [entities, visible, showAll, facilityCode])
+
+    // useEffect(() => {
+    //     updateVisible()
+    // }, [viewer, entities, visible])
+    //
 
     return null
 }
@@ -59,6 +68,7 @@ MapFacilityBillboardLayer.propTypes = {
     viewer: PropTypes.any,
     visible: PropTypes.bool,
     showAll: PropTypes.bool,
+    facilityCode: PropTypes.string,
 }
 
 export default MapFacilityBillboardLayer

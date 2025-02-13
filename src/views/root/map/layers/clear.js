@@ -32,7 +32,9 @@ const MapClearLayer = ({viewer, visible}) => {
 
         return () => {
             if (tileset.current) {
-                viewer?.scene?.primitives?.remove(tileset.current)
+                try {
+                    viewer?.scene?.primitives?.remove(tileset.current)
+                } catch(e) {}
             }
         }
     }, [viewer, visible]);

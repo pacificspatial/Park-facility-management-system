@@ -1,9 +1,9 @@
 import PropTypes from "prop-types"
 import {useContext, useEffect, useRef, useState} from "react"
 import * as Cesium from "cesium"
-import {RootDataContext} from "../../index"
 import ColumnDef from "../../list/model/tree/column"
 import {StyleDefineFromAgGridColumnDef} from "../../../../manager/cesium"
+import {MainDataContext} from "../../../../App";
 
 const tilesetVariableDefine = {
     cartodb_id: "${feature['cartodb_id']}",
@@ -28,7 +28,7 @@ const tilesetVariableDefine = {
 const MapTreeLayer = ({viewer, visible}) => {
 
     const tileset = useRef()
-    const { state } = useContext(RootDataContext)
+    const { state } = useContext(MainDataContext)
     const [layerInitialized, setLayerInitialized] = useState(false)
 
     useEffect(() => {
@@ -58,7 +58,9 @@ const MapTreeLayer = ({viewer, visible}) => {
 
         return () => {
             if (tileset.current) {
-                viewer?.scene?.primitives?.remove(tileset.current)
+                try {
+                    viewer?.scene?.primitives?.remove(tileset.current)
+                } catch(e) {}
             }
         }
     }, [viewer]);
