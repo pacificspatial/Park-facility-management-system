@@ -1,70 +1,97 @@
-# Getting Started with Create React App
+# 公園管理台帳システム
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![概要](./img/echigopark_map_and_list.png)
 
-## Available Scripts
+## 1. 概要 
+本リポジトリでは、2023年度のProject PLATEAUで開発した「公園管理システムアプリケーション」のソースコードを公開しています。
 
-In the project directory, you can run:
+「公園管理システムアプリケーション」は、PLATEAUの3D都市モデルを活用して管理業務をDXし、効率的なインフラ管理の実現を目指すものです。
 
-### `npm start`
+## 2. 「公園管理システムアプリケーション」について 
+「公園管理システムアプリケーション」は、3D 都市モデルを活用した公園管理用のリレーショナルデータベースマネジメントシステム（RDBMS）です。
+公園管理における管理者から現場担当者への方針伝達や点検記録、「公園施設長寿命化計画」に基づく方針立案や維持保全活動の情報共有に活用することを目的としています。
+本システムは、RDBMS に紐づく管理用アプリケーション（OSS化対象外）と併せた利用を想定しており、施設の管理類型や健全度・緊急度判定等を把握しながら点検や計画立案・更新等の管理業務を効率化・高度化する機能の実装を行いました。
+本システムの詳細については[技術検証レポート](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0091_ver01.pdf)を参照してください。
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 3. 利用手順 
+本システムの構築手順及び利用手順については[利用チュートリアル](https://project-plateau.github.io/Park-facility-management-system/)を参照してください。
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 4. システム概要
+### 【データ表示】
+#### ①インシデントデータの表示と確認　
+- 巡回点検アプリ（携帯アプリ）で取得してデータベースに登録されている、公園の遊具や施設類の異常等の状況を表示します。
+- 異常があった場合は、報告時刻、施設名、異常内容と対応内容等の情報と地図へのリンクを表示します。
 
-### `npm test`
+#### ②水道メータデータの表示　
+- 巡回点検アプリ（携帯アプリ）で取得してデータベースに登録されている、水道メータの点検時の値を表示します。
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### ③水温データの表示　
+- 巡回点検アプリ（携帯アプリ）で取得してデータベースに登録されている、水温の点検時の値を表示します。
 
-### `npm run build`
+#### ④塩素濃度データの表示　
+- 巡回点検アプリ（携帯アプリ）で取得してデータベースに登録されている、塩素濃度の点検時の値を表示します。
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### ⑤行動履歴データの表示　
+- 巡回点検アプリ（携帯アプリ）で自動的に取得してデータベースに登録されている、巡視員の携帯電話のGPSデータから作成した行動履歴データを表示します。
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### ⑥公園施設長寿命化計画データの表示　
+- 公園施設長寿命化計画データのリストと地図を表示します。
+- リストの絞り込みと地図表示が連動、地図クリックとリスト表示が連動します。
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### ⑦樹木管理台帳データの表示　
+- 樹木管理台帳データのリストと地図を表示します。
+- リストの絞り込みと地図表示が連動、地図クリックとリスト表示が連動します。
 
-### `npm run eject`
+#### ⑧報告書の生成と表示、エクスポート　
+- 巡回報告書を自動生成します。
+- 生成された報告書はExcel形式でダウンロードできます。
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 5. 利用技術
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| 種別              | 名称   | バージョン | 内容 |
+| ----------------- | --------|-------------|-----------------------------|
+| オープンソースソフトウェア       | [Apache HTTP Server](https://httpd.apache.org/) | 2.4.58 | Webアプリで配信を行うためのWebサーバーソフトウェア |
+|        | [PostGIS](https://github.com/postgis/postgis) | 3.4.1 | PostgreSQLで位置情報を扱うことを可能とする拡張機能 |
+| オープンソースライブラリ       | [CesiumJS](https://github.com/CesiumGS/cesium) | 1.115 | 3Dビューワ上にデータを描画するためのライブラリ |
+|        | [React.js](https://github.com/facebook/react/releases) | 18.2.0 | JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ |
+| オープンソースRDBMS       | [PostgreSQL](https://github.com/postgres/postgres) | 16.2 | 各種配信するデータを格納するリレーショナルデータベース |
+|  商用ソフトウェア       | [FME Form](https://safe.com/) | 2023.1 | ファイル変換などの処理およびその自動化を行う |
+|        | [FME Flow](https://safe.com/) | - | FME Formで構築した処理フローをサーバーで実行する |
+|        | [Cesium ion](https://cesium.com/platform/cesium-ion/) | - | 3Dデータの変換と配信のクラウドサービス |
+|   商用ライブラリ      | [AG Grid](https://ag-grid.com/) | 31.1.1 | JavaScriptで集計、フィルタリング等を行うためのライブラリ |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 6. 動作環境 
+| 項目               | 最小動作環境                                                                                                                                                                                                                                                                                                                                    | 推奨動作環境                   | 
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | 
+| OS                 | Microsoft Windows 10 以上　または macOS 12 Monterey 以上                                                                                                                                                                                                                                                                                                                  |  同左 | 
+| CPU                | Pentium 4 以上                                                                                                                                                                                                                                                                                                                               | 同左              | 
+| メモリ             | 8GB以上                                                                                                                                                                                                                                                                                                                                         | 同左                        |                  | 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 7. 本リポジトリのフォルダ構成 
+| フォルダ名               | 詳細               | 
+| ------------- | ------------ | 
+| img  | スクリーンショット                                                                                                                                                                                                                                                                                                                              | 
+| resources  | FME Workspaceで使用する地形モデルなど                                                                                                                                                                                                                                                                                                                              | 
+| src/manager  | データマネージャ                                                                                                                                                                                                                                                                                                                              | 
+| src/resources/map  | geojson置き場                                                                                                                                                                                                                                                                                                                              | 
+| src/views/root   | ページレンダリングコンポーネント                                                                                                                                                                                                                                                                                                                            | 
+| src/App.css   | アプリ標準スタイル                                                                                                                                                                                                                                                                                                                              | 
+| src/App.js  | アプリコンポーネント                                                                                                                                                                                                                                                                                                                              | 
+| src/index.css  |  初期スタイル                                                                                                                                                                                                                                                                                                                             | 
+| src/index.js  |  初期JS                                                                                                                                                                                                                                                                                                                             | 
+| workspaces  |  FME Form で実行するWorkspaceとFME Flowの設定に使用するプロジェクトファイル                                                                                                                                                                                                                                                                                                                             | 
 
-## Learn More
+## 8. ライセンス
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- ソースコード及び関連ドキュメントの著作権は国土交通省に帰属します。
+- 本ドキュメントは[Project PLATEAUのサイトポリシー](https://www.mlit.go.jp/plateau/site-policy/)（CCBY4.0及び政府標準利用規約2.0）に従い提供されています。
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 9. 注意事項 
 
-### Code Splitting
+- 本リポジトリは参考資料として提供しているものです。動作保証は行っていません。
+- 本リポジトリについては予告なく変更又は削除をする可能性があります。
+- 本リポジトリの利用により生じた損失及び損害等について、国土交通省はいかなる責任も負わないものとします。
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 10. 参考資料
+- 技術検証レポート: https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_tech_doc_0091_ver01.pdf
+- PLATEAU WebサイトのUse caseページ「公園管理のDX」: https://www.mlit.go.jp/plateau/use-case/uc23-21/
