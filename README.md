@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/0b4bdd5c-c37c-4dcf-b8f1-8cfdf4d9b335)# 公園管理台帳システム
+# 公園管理台帳システム
 
 ![概要](./img/echigo_parkmanagement_mapandlist_2024.png)
 
