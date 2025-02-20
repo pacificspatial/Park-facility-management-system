@@ -55,7 +55,7 @@
 | オープンソースライブラリ       | [CesiumJS](https://github.com/CesiumGS/cesium) | 1.115 | 3Dビューワ上にデータを描画するためのライブラリ |
 |        | [React.js](https://github.com/facebook/react/releases) | 18.2.0 | JavaScriptのフレームワーク内で機能するUIを構築するためのライブラリ |
 | オープンソースRDBMS       | [PostgreSQL](https://github.com/postgres/postgres) | 16.2 | 各種配信するデータを格納するリレーショナルデータベース |
-|  商用ソフトウェア       | [FME Form](https://safe.com/) | 2023.1 | ファイル変換などの処理およびその自動化を行う |
+|  商用ソフトウェア       | [FME Form](https://safe.com/) | 2024.1, 2024.2 | ファイル変換などの処理およびその自動化を行う |
 |        | [FME Flow](https://safe.com/) | - | FME Formで構築した処理フローをサーバーで実行する |
 |        | [Cesium ion](https://cesium.com/platform/cesium-ion/) | - | 3Dデータの変換と配信のクラウドサービス |
 |   商用ライブラリ      | [AG Grid](https://ag-grid.com/) | 31.1.1 | JavaScriptで集計、フィルタリング等を行うためのライブラリ |
