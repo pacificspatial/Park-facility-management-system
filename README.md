@@ -1,6 +1,6 @@
 # 公園管理台帳システム
 
-![概要](./img/echigopark_map_and_list.png)
+![概要](./img/echigo_parkmanagement_mapandlist_2024png)
 
 ## 1. 概要 
 本リポジトリでは、2023年度のProject PLATEAUで開発した「公園管理システムアプリケーション」のソースコードを公開しています。
