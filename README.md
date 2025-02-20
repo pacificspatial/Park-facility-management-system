@@ -71,7 +71,23 @@
 | フォルダ名               | 詳細               | 
 | ------------- | ------------ | 
 | img  | スクリーンショット                                                                                                                                                                                                                                                                                                                              | 
-| resources  | FME Workspaceで使用する地形モデルなど                                                                                                                                                                                                                                                                                                                              | 
+| resources  | FME Workspaceで使用する地形モデルなど
+
+| admin-web/public  |             
+
+| admin-web/public/cesium  |             
+
+| admin-web/src/manager/  | 
+
+| admin-web/src/resources/map  |   
+
+| admin-web/src/view/root  | 
+
+| src/views/root   | ページレンダリングコンポーネント                                                                                                                                                                                                                                                                                                                            | 
+| src/App.css   | アプリ標準スタイル                                                                                                                                                                                                                                                                                                                              | 
+| src/App.js  | アプリコンポーネント                                                                                                                                                                                                                                                                                                                              | 
+| src/index.css  |  初期スタイル                                                                                                                                                                                                                                                                                                                             | 
+| src/index.js  |  初期JS                                                                                                                                                                                                                                                                                                                             | | 
 | src/manager  | データマネージャ                                                                                                                                                                                                                                                                                                                              | 
 | src/resources/map  | geojson置き場                                                                                                                                                                                                                                                                                                                              | 
 | src/views/root   | ページレンダリングコンポーネント                                                                                                                                                                                                                                                                                                                            | 
